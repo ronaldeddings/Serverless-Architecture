@@ -1,0 +1,41 @@
+service: generic-oauth
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-1
+  stage: dev
+  environment:
+    BASE_URL: "https://YourBaseURL/${self:provider.stage}"
+    REDIRECT_URI: "https://YourBaseURL/${self:provider.stage}/oauth"
+    CLIENT_ID: "${env:CLIENT_ID}"
+    CLIENT_SECRET: "${env:CLIENT_SECRET}"
+    TOKEN_URL: "https://TokenURL"
+    AUTHORIZE_URL: "https://TokenURL"
+    SCOPE: "comma,separated,scopes"
+
+functions:
+  login:
+    handler: oauth/login.login
+    events:
+      - http:
+          path: login
+          method: any
+          request:
+            passThrough: WHEN_NO_MATCH
+
+  oauth:
+    handler: oauth/oauth.oauth
+    events:
+      - http:
+          path: oauth
+          method: any
+          request:
+            passThrough: WHEN_NO_MATCH
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
