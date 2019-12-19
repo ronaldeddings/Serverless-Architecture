@@ -1,0 +1,24 @@
+service: url2image
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-1
+  stage: dev
+
+functions:
+  render:
+    handler: url2image/index.render
+    timeout: 30
+    events:
+      - http:
+          path: index
+          method: any
+          request:
+            passThrough: WHEN_NO_MATCH
+
+plugins:
+  - serverless-python-requirements
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
